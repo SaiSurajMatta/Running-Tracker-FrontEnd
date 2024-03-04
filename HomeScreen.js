@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import LogActivityScreen from './LogActivityScreen';
 
 const HomeScreen = ({ navigation }) => {
   const [activeTab, setActiveTab] = useState('home');
@@ -18,6 +19,9 @@ const HomeScreen = ({ navigation }) => {
         break;
       case 'profile':
         navigation.navigate('ProfileScreen');
+        break;
+      case 'logActivity':
+        navigation.navigate('LogActivityScreen');
         break;
       default:
         // Navigate to home screen by default
@@ -64,7 +68,7 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, styles.logButton]}
-          onPress={() => handleNavigation('history')}>
+          onPress={() => handleNavigation('logActivity')}>
           <Ionicons name="add" size={24} color="white" />
           <Text style={styles.buttonText}>LOG PREVIOUS ACTIVITY</Text>
         </TouchableOpacity>

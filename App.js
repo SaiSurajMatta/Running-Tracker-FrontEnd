@@ -7,6 +7,7 @@ import HomeScreen from './HomeScreen';
 import FirstTime from './FirstTime';
 import StartScreen from './StartScreen';
 import RunDetails from './RunDetails';
+import LogActivityScreen from './LogActivityScreen';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +21,7 @@ export default function App() {
         <Stack.Screen name="SignupForm" component={SignupForm} />
         <Stack.Screen name="StartScreen" component={StartScreen} options={{ headerShown: false }} />
         <Stack.Screen name="RunDetails" component={RunDetails} options={{ headerShown: false }} />
+        <Stack.Screen name="LogActivityScreen" component={LogActivityScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
