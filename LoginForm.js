@@ -47,7 +47,7 @@ const LoginForm = ({ navigation }) => {
       </TouchableOpacity>
 
       {/* Forgot Password button */}
-      <TouchableOpacity onPress={() => alert('Forgot Password?')}>
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.forgotPasswordTextButton}>Forgot Password?</Text>
       </TouchableOpacity>
     </View>
@@ -98,12 +98,11 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     textDecorationLine: 'underline',
   },
-  // Style for the Forgot Password button
   forgotPasswordTextButton: {
     fontSize: 16,
     color: '#007BFF',
     textDecorationLine: 'underline',
-    marginTop: 10, // Adjust the margin as needed
+    marginTop: 10,
   },
 });
 

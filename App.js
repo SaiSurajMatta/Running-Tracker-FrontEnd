@@ -8,13 +8,14 @@ import FirstTime from './FirstTime';
 import StartScreen from './StartScreen';
 import RunDetails from './RunDetails';
 import LogActivityScreen from './LogActivityScreen';
+import ForgotPassword from './ForgotPassword'; // Ensure this file exists and is correctly exported
 
 const Stack = createStackNavigator();
 
-export default function App() {
+function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeScreen">
+      <Stack.Navigator initialRouteName="LoginForm">
         <Stack.Screen name="FirstTime" component={FirstTime} options={{ headerShown: false }} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ headerShown: false }} />
         <Stack.Screen name="LoginForm" component={LoginForm} />
@@ -22,7 +23,10 @@ export default function App() {
         <Stack.Screen name="StartScreen" component={StartScreen} options={{ headerShown: false }} />
         <Stack.Screen name="RunDetails" component={RunDetails} options={{ headerShown: false }} />
         <Stack.Screen name="LogActivityScreen" component={LogActivityScreen} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+export default App;
