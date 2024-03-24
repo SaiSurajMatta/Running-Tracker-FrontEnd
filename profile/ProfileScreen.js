@@ -13,7 +13,7 @@ const ProfileScreen = ({ navigation, route }) => {
     gender,
     address,
   } = route.params || {};
-  const formattedDateOfBirth = dateOfBirth ? new Date(dateOfBirth) : null;
+  const formattedDateOfBirth = dateOfBirth ? new Date(dateOfBirth).toLocaleDateString() : '';
 
   const [activeTab, setActiveTab] = useState("profile");
 
@@ -41,6 +41,7 @@ const ProfileScreen = ({ navigation, route }) => {
         <TouchableOpacity
           style={styles.threedots}
           onPress={() => setShowOptions(!showOptions)} // Toggle options visibility
+          testID="options-toggle"
         >
           <Ionicons name="ellipsis-vertical" size={24} color="#FFFFFF" />
         </TouchableOpacity>
