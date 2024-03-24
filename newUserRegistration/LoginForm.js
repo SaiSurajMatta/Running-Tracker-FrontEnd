@@ -47,7 +47,7 @@ const LoginForm = ({ navigation }) => {
       </TouchableOpacity>
 
       {/* Forgot Password button */}
-      <TouchableOpacity onPress={() => alert('Forgot Password?')}>
+      <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.forgotPasswordTextButton}>Forgot Password?</Text>
       </TouchableOpacity>
     </View>
