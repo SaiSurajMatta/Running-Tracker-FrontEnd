@@ -56,11 +56,12 @@
 // });
 
 // export default RunDetails;
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 const RunDetails = ({ route, navigation }) => {
+  
   // Dummy data for display purposes
   const dummyData = {
     title: 'Morning Run',
@@ -73,13 +74,17 @@ const RunDetails = ({ route, navigation }) => {
   // For dynamic data, use `route.params`
   const { title, location, distance, duration, date } = dummyData;
 
+  // Active tab is 'home' for highlighting
+  const [activeTab, setActiveTab] = useState('profile'); // Assuming 'home' is the active tab for demonstration
+
   const handleNavigation = (tab) => {
-    // Navigate based on tab name, similar to the HomeScreen navigation
-    navigation.navigate(tab);
+    if (route.name !== tab) {
+      setActiveTab(tab);
+      navigation.navigate(tab);
+    }
   };
 
-  // Active tab is 'home' for highlighting
-  const activeTab = 'home';
+  
 
   return (
     <View style={styles.container}>

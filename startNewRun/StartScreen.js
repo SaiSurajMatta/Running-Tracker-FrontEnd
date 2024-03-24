@@ -5,7 +5,7 @@ import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 const StartScreen = ({ navigation }) => {
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
-  const [activeTab, setActiveTab] = useState('home'); // Assuming 'home' is the active tab for demonstration
+  const [activeTab, setActiveTab] = useState('profile'); // Assuming 'home' is the active tab for demonstration
 
   const handleStart = () => {
     // Start the timer or tracking functionality
@@ -19,8 +19,10 @@ const StartScreen = ({ navigation }) => {
   };
 
   const handleNavigation = (tab) => {
-    setActiveTab(tab);
-    navigation.navigate(tab);
+    if (route.name !== tab) {
+      setActiveTab(tab);
+      navigation.navigate(tab);
+    }
   };
 
   return (
