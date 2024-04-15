@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import PredictionForm from "./PredictionForm";
 // import DropDownPicker from "react-native-dropdown-picker";
 
 const ProfileScreen = ({ navigation, route }) => {
@@ -16,17 +17,17 @@ const ProfileScreen = ({ navigation, route }) => {
   const formattedDateOfBirth = dateOfBirth ? new Date(dateOfBirth).toLocaleDateString() : '';
 
   const [activeTab, setActiveTab] = useState("profile");
-
   const [showOptions, setShowOptions] = useState(false); 
-  // const [isDropDownVisible, setIsDropDownVisible] = useState(false);
-  // const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+// const [isDropDownVisible, setIsDropDownVisible] = useState(false);
+// const [isDropDownOpen, setIsDropDownOpen] = useState(false);
   const handleLogout = () => {
     navigation.navigate('LoginForm');
   };
 
   const handleEdit = () => {
-
+    // Functionality to edit profile details
   };
+
   const handleNavigation = (tab) => {
     if (route.name !== tab) {
       setActiveTab(tab);
@@ -40,7 +41,7 @@ const ProfileScreen = ({ navigation, route }) => {
         <Text style={styles.title}>Profile</Text>
         <TouchableOpacity
           style={styles.threedots}
-          onPress={() => setShowOptions(!showOptions)} // Toggle options visibility
+          onPress={() => setShowOptions(!showOptions)}
           testID="options-toggle"
         >
           <Ionicons name="ellipsis-vertical" size={24} color="#FFFFFF" />
@@ -70,9 +71,16 @@ const ProfileScreen = ({ navigation, route }) => {
           <Text style={styles.detailLabel}>Address:</Text>
           <Text style={styles.detail}>{address}</Text>
         </View>
+        {/* New button to navigate to PredictionForm */}
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('PredictionForm')}
+        >
+          <Text style={styles.buttonText}>Predict my Performance</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.optionsContainer}>
-        {showOptions && ( // Render options only if showOptions is true
+        {showOptions && (
           <View style={styles.options}>
             <TouchableOpacity onPress={handleEdit}>
               <Text style={styles.option}>Edit</Text>
@@ -130,7 +138,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#FFFFFF",
     marginTop: 20,
-    flex: 1, // Allow the title to take up available space
+    flex: 1,
     textAlign: "center",
   },
   threedots: {
@@ -159,11 +167,24 @@ const styles = StyleSheet.create({
   detail: {
     flex: 1,
   },
+  button: {
+    backgroundColor: "#00BFFF",
+    padding: 15,
+    borderRadius: 25,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 20,
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
   optionsContainer: {
     position: "absolute",
     top: 85,
     right: 10,
-    zIndex: 999, // Ensure options appear above other content
+    zIndex: 999,
   },
   options: {
     backgroundColor: "#FFFFFF",
@@ -180,7 +201,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     paddingVertical: 10,
-    backgroundColor: "#FFFFFF", // Optional, for better visibility
+    backgroundColor: "#FFFFFF",
   },
 });
 

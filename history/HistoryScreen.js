@@ -38,11 +38,11 @@ const HistoryScreen = ({ navigation }) => {
         ))}
       </ScrollView>
       <View style={styles.navBar}>
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-          <Ionicons name='home-outline' size={24} color='black' />
-        </TouchableOpacity>
         <TouchableOpacity>
           <Ionicons name='time' size={24} color='#00BFFF' />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+          <Ionicons name='home-outline' size={24} color='black' />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
           <Ionicons name='person-outline' size={24} color='black' />

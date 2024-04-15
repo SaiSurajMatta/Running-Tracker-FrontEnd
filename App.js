@@ -11,6 +11,8 @@ import LogActivityScreen from './logPreviousActivity/LogActivityScreen';
 import ProfileScreen from './profile/ProfileScreen';
 import HistoryScreen from './history/HistoryScreen';
 import ForgotPassword from './newUserRegistration/ForgotPassword'; // Ensure this file exists and is correctly exported
+import PredictionForm from './profile/PredictionForm';
+import PredictionResult from './profile/PredictionResult';
 
 const Stack = createStackNavigator();
 
@@ -27,6 +29,8 @@ function App() {
         <Stack.Screen name="LogActivityScreen" component={LogActivityScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="ProfileScreen" component={ProfileScreen} options={{ headerShown: false }}/>
         <Stack.Screen name="HistoryScreen" component={HistoryScreen} options={{ headerShown: false }}/>
+        <Stack.Screen name="PredictionForm" component={PredictionForm} options={{ headerShown: false }}/>
+        <Stack.Screen name="PredictionResult" component={PredictionResult} options={{ headerShown: false }}/>
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
       </Stack.Navigator>
     </NavigationContainer>
