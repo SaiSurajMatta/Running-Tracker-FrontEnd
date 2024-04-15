@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
-const LogActivityScreen = ({ navigation }) => {
+const LogActivityScreen = ({ navigation, route }) => {
   const [activityTitle, setActivityTitle] = useState("");
   const [location, setLocation] = useState("");
   const [date, setDate] = useState("");

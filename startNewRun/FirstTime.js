@@ -7,13 +7,15 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { Picker } from '@react-native-picker/picker';
+
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 
-const FirstTime = ({ navigation }) => {
+const FirstTime = ({ navigation, route }) => {
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
-  const [frequency, setFrequency] = useState("");
-  const [fitnessLevel, setFitnessLevel] = useState("");
+  const [frequency, setFrequency] = useState("1");
+  const [fitnessLevel, setFitnessLevel] = useState("1");
 
   // Active tab for highlighting the current section in the navigation bar
   const [activeTab, setActiveTab] = useState("profile"); // Assuming 'FirstTime' is part of 'profile'
@@ -21,6 +23,16 @@ const FirstTime = ({ navigation }) => {
   const handleSubmit = () => {
     // Save the data or navigate to the next screen
     navigation.navigate("StartScreen");
+  };
+
+  // Function to handle frequency selection
+  const handleFrequencyChange = (value) => {
+    setFrequency(value);
+  };
+
+  // Function to handle fitness level selection
+  const handleFitnessLevelChange = (value) => {
+    setFitnessLevel(value);
   };
 
   const handleNavigation = (tab) => {
@@ -52,18 +64,26 @@ const FirstTime = ({ navigation }) => {
           onChangeText={setWeight}
           style={styles.input}
         />
-        <TextInput
-          placeholder="Enter frequency..."
-          value={frequency}
-          onChangeText={setFrequency}
+        <Picker
+          selectedValue={frequency}
+          onValueChange={(itemValue) => handleFrequencyChange(itemValue)}
           style={styles.input}
-        />
-        <TextInput
-          placeholder="Enter fitness level (beginner, intermediate, advanced)"
-          value={fitnessLevel}
-          onChangeText={setFitnessLevel}
+        >
+          {[...Array(7)].map((_, index) => (
+            <Picker.Item key={index + 1} label={`${index + 1} day(s) per week`} value={(index + 1).toString()} />
+          ))}
+        </Picker>
+        {/* Fitness level dropdown */}
+        <Picker
+          selectedValue={fitnessLevel}
+          onValueChange={(itemValue) => handleFitnessLevelChange(itemValue)}
           style={styles.input}
-        />
+        >
+          <Picker.Item label="Beginner" value="1" />
+          <Picker.Item label="Intermediate" value="2" />
+          <Picker.Item label="Expert" value="3" />
+        </Picker>
+
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           <MaterialCommunityIcons name="run" size={24} color="white" />
           <Text style={styles.buttonText}>START RUN</Text>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
 
-const StartScreen = ({ navigation }) => {
+const StartScreen = ({ navigation, route }) => {
   const [title, setTitle] = useState('');
   const [location, setLocation] = useState('');
   const [activeTab, setActiveTab] = useState('profile'); // Assuming 'home' is the active tab for demonstration
