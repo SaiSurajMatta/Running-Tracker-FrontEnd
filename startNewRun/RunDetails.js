@@ -1,81 +1,49 @@
-// import React from 'react';
-// import { View, Text, StyleSheet } from 'react-native';
-
-// const RunDetails = ({ route, navigation }) => {
-//   // Uncomment the below line and the useEffect import when ready to fetch data from an API
-//   // useEffect(() => {
-//   //   fetchData();
-//   // }, []);
-
-//   // Dummy data for display purposes
-//   const dummyData = {
-//     title: 'Morning Run',
-//     location: 'Central Park, NYC',
-//     distance: '5.2',
-//     duration: '0.75',
-//     date: '2024-03-01',
-//   };
-
-//   // Replace `route.params` with `dummyData` for static display or use `route.params` when passing data dynamically
-//   const { title, location, distance, duration, date } = dummyData; // For dynamic data, use `route.params`
-
-//   // Example function for fetching data from an API (commented out for future use)
-//   /*
-//   const fetchData = async () => {
-//     try {
-//       const response = await fetch('https://example.com/api/runs/details');
-//       const data = await response.json();
-//       console.log(data);
-//       // You can set the data to state here and then use it as needed
-//     } catch (error) {
-//       console.error('There was an error fetching the run details:', error);
-//     }
-//   };
-//   */
-
-//   return (
-//     <View style={styles.container}>
-//       <Text>Activity Completed</Text>
-//       <Text>{title}</Text>
-//       <Text>{location}</Text>
-//       <Text>{distance} Miles</Text>
-//       <Text>{duration} Hours</Text>
-//       <Text>{date}</Text>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     padding: 20,
-//   },
-  
-// });
-
-// export default RunDetails;
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import moment from 'moment';  // Make sure to import moment if you haven't already
+
+const api = axios.create({
+  baseURL: 'http://127.0.0.1:5000',
+});
 
 const RunDetails = ({ route, navigation }) => {
-  
-  // Dummy data for display purposes
-  const dummyData = {
-    title: 'Morning Run',
-    location: 'Central Park, NYC',
-    distance: '5.2',
-    duration: '0.75',
-    date: '2024-03-01',
+  const { endTime, timer, title, location, userId, start_time, activity_id } = route.params;
+  const [activeTab, setActiveTab] = useState('home');
+  const [activityDetails, setActivityDetails] = useState({
+    user_id: userId,
+    activity_id: activity_id,
+    date: new Date().toISOString().split('T')[0], // Use moment to ensure correct formatting if necessary
+    end_time: endTime,
+    distance: ''
+  });
+
+  const handleChange = (name, value) => {
+    setActivityDetails(prev => ({ ...prev, [name]: value }));
   };
 
-  // For dynamic data, use `route.params`
-  const { title, location, distance, duration, date } = dummyData;
+  const handleSave = async () => {
+    console.log("Sending data to /endActivity:", activityDetails);
 
-  // Active tab is 'home' for highlighting
-  const [activeTab, setActiveTab] = useState('profile'); // Assuming 'home' is the active tab for demonstration
+    try {
+      const response = await api.post('/endActivity', {
+        user_id: activityDetails.user_id,
+        activity_id: activityDetails.activity_id,
+        date: activityDetails.date,
+        end_time: activityDetails.end_time,
+        distance: activityDetails.distance
+      });
+      if (response.status === 200) {
+        Alert.alert("Success", "Activity completed successfully!");
+        navigation.navigate('HistoryScreen');
+      } else {
+        throw new Error('Failed to complete activity');
+      }
+    } catch (error) {
+      Alert.alert("Error", error.message || "Failed to complete activity");
+    }
+  };
 
   const handleNavigation = (tab) => {
     if (route.name !== tab) {
@@ -84,47 +52,36 @@ const RunDetails = ({ route, navigation }) => {
     }
   };
 
-  
-
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.titleBar}>
         <Text style={styles.title}>Run Details</Text>
       </View>
-
-      {/* Content */}
       <View style={styles.contentContainer}>
-        <Text>Activity Completed</Text>
-        <Text>{title}</Text>
-        <Text>{location}</Text>
-        <Text>{distance} Miles</Text>
-        <Text>{duration} Hours</Text>
-        <Text>{date}</Text>
+        <Text>Activity Title: {title}</Text>
+        <Text>Location: {location}</Text>
+        <Text>Start Time: {moment(start_time).format('LT')}</Text>
+        <Text>Date: {activityDetails.date}</Text>
+        <Text>End Time: {activityDetails.end_time}</Text>
+        <TextInput
+          placeholder="Enter distance (miles)"
+          value={activityDetails.distance}
+          onChangeText={(value) => handleChange('distance', value)}
+          style={styles.input}
+        />
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.buttonText}>Save</Text>
+        </TouchableOpacity>
       </View>
-
-      {/* Fixed Navigation Bar at the bottom */}
       <View style={styles.navBar}>
         <TouchableOpacity onPress={() => handleNavigation('HistoryScreen')}>
-          <Ionicons
-            name={activeTab === 'history' ? 'time' : 'time-outline'}
-            size={24}
-            color={activeTab === 'history' ? '#00BFFF' : 'black'}
-          />
+          <Ionicons name={activeTab === 'history' ? 'time' : 'time-outline'} size={24} color={activeTab === 'history' ? '#00BFFF' : 'black'} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleNavigation('HomeScreen')}>
-          <Ionicons
-            name={activeTab === 'home' ? 'home' : 'home-outline'}
-            size={24}
-            color={activeTab === 'home' ? '#00BFFF' : 'black'}
-          />
+          <Ionicons name={activeTab === 'home' ? 'home' : 'home-outline'} size={24} color={activeTab === 'home' ? '#00BFFF' : 'black'} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleNavigation('ProfileScreen')}>
-          <Ionicons
-            name={activeTab === 'profile' ? 'person' : 'person-outline'}
-            size={24}
-            color={activeTab === 'profile' ? '#00BFFF' : 'black'}
-          />
+          <Ionicons name={activeTab === 'profile' ? 'person' : 'person-outline'} size={24} color={activeTab === 'profile' ? '#00BFFF' : 'black'} />
         </TouchableOpacity>
       </View>
     </View>
@@ -134,7 +91,7 @@ const RunDetails = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between', // This ensures the nav bar stays at the bottom
+    justifyContent: 'space-between',
   },
   titleBar: {
     backgroundColor: '#00BFFF',
@@ -150,16 +107,33 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   contentContainer: {
-    flex: 1, // Take up all available space between header and nav bar
-    justifyContent: 'center',
-    alignItems: 'center',
+    flex: 1,
     padding: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  saveButton: {
+    backgroundColor: '#00BFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   navBar: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 10,
-    backgroundColor: '#FFFFFF', // Optional, for better visibility
+    backgroundColor: '#FFFFFF',
   },
 });
 
