@@ -11,7 +11,9 @@ import {
   TouchableOpacity,
   Alert,
   Image,
+  ActivityIndicator,
 } from 'react-native';
+import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 const SignupForm = ({ navigation }) => {
@@ -24,28 +26,44 @@ const SignupForm = ({ navigation }) => {
   const [gender, setGender] = useState('');
   const [address, setAddress] = useState('');
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const validatePassword = (password) => {
     const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.{8,})/;
     return regex.test(password);
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     if (!validatePassword(password)) {
       Alert.alert("Password Validation", "Password must be at least 8 characters long, include an uppercase letter, a lowercase letter, and a special character.");
       return;
     }
-    console.log({
-      email,
-      password,
-      firstName,
-      middleName,
-      lastName,
-      dateOfBirth,
-      gender,
-      address,
-    });
-    // Proceed with signup process
+
+    const userData = {
+      name: `${firstName} ${middleName} ${lastName}`.trim(),
+      dob: dateOfBirth.toISOString().split('T')[0],
+      gender: gender,
+      address: address,
+      email: email,
+      password: password
+    };
+
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post('http://127.0.0.1:5000/signup', userData);
+      if (response.status === 200) {
+        Alert.alert('Signup Successful', 'You have successfully signed up.', [
+          { text: "OK", onPress: () => navigation.navigate('LoginForm') }
+        ]);
+      } else {
+        throw new Error('Signup failed');
+      }
+    } catch (error) {
+      Alert.alert('Signup Failed', error.response ? error.response.data.message : error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -71,7 +89,7 @@ const SignupForm = ({ navigation }) => {
         <Text style={styles.label}>Password:</Text>
         <TextInput
           style={styles.input}
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={setPassword}
           value={password}
           placeholder="Enter password"
           secureTextEntry
@@ -153,7 +171,11 @@ const SignupForm = ({ navigation }) => {
           multiline
         />
 
-        <Button title="Sign Up" onPress={handleSignUp} />
+        {isLoading ? (
+          <ActivityIndicator size="large" color="#0000ff" />
+        ) : (
+          <Button title="Sign Up" onPress={handleSignUp} />
+        )}
 
         <TouchableOpacity
           style={styles.signInButton}

@@ -1,27 +1,61 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [currentStep, setCurrentStep] = useState(1); 
+  const [currentStep, setCurrentStep] = useState(1);
 
   const handleSendOtp = () => {
-    setCurrentStep(2);
+    fetch('http://127.0.0.1:5000/forgotPassword', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      Alert.alert("OTP Sent", data.message);
+      setCurrentStep(2);
+    })
+    .catch(error => {
+      Alert.alert("Error", "Failed to send OTP");
+      console.error('Error:', error);
+    });
   };
 
-  const handleVerifyOtp = () => {
-    setCurrentStep(3);
+  const handleNextStep = () => {
+    setCurrentStep(currentStep + 1);  // Progresses to the next step
   };
 
   const handleResetPassword = () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords don't match!");
+      Alert.alert("Error", "Passwords don't match!");
       return;
     }
-    alert('Password has been reset successfully!');
+
+    fetch('http://127.0.0.1:5000/resetPassword', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email,
+        otp,
+        password: newPassword,
+      }),
+    })
+    .then(response => response.json())
+    .then(data => {
+      Alert.alert("Success", data.message);
+    })
+    .catch(error => {
+      Alert.alert("Error", "Failed to reset password");
+      console.error('Error:', error);
+    });
   };
 
   return (
@@ -51,8 +85,8 @@ const ForgotPassword = () => {
             placeholder="OTP"
             keyboardType="number-pad"
           />
-          <TouchableOpacity style={styles.button} onPress={handleVerifyOtp}>
-            <Text style={styles.buttonText}>Verify OTP</Text>
+          <TouchableOpacity style={styles.button} onPress={handleNextStep}>
+            <Text style={styles.buttonText}>Next</Text>
           </TouchableOpacity>
         </>
       )}
