@@ -1,66 +1,57 @@
-import React, {useState, useEffect} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, ActivityIndicator} from 'react-native';
-import {Ionicons, MaterialCommunityIcons} from '@expo/vector-icons';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'http://127.0.0.1:5000', // Change this to the actual server IP when deploying
+  baseURL: 'http://127.0.0.1:5000',
 });
 
-const HomeScreen = ({navigation}) => {
-    const [user, setUser] = useState(null);
-    const [activities, setActivities] = useState([]);
-    const [totalDistance, setTotalDistance] = useState(0);
-    const [isNewUser, setIsNewUser] = useState(true); // Default to true, updated based on activity fetch
-    const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("home");
+const HomeScreen = ({ route, navigation }) => {
+  const [user, setUser] = useState(null);
+  const [activities, setActivities] = useState([]);
+  const [totalDistance, setTotalDistance] = useState(0);
+  const [isNewUser, setIsNewUser] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("home");
 
-    // Mock user credentials for login
-    const credentials = {
-      email: 'tim99@abc.com',
-      password: 'xy@345'
-    };
+  useEffect(() => {
+    if (route.params?.email && route.params?.password) {
+      loginAndFetchData(route.params.email, route.params.password);
+    }
+  }, [route.params]);
 
-    useEffect(() => {
-        const loginAndFetchData = async () => {
-            try {
-                // Login to get user details
-                const loginResponse = await api.post('/login', credentials);
-                if (loginResponse.data[0] === "Login successful") {
-                    const userId = loginResponse
-                        .data[1]
-                        .user_id;
-                    setUser(userId);
+  const loginAndFetchData = async (email, password) => {
+    setLoading(true);
+    try {
+      const loginResponse = await api.post('/login', { email, password });
+      if (loginResponse.data[0] === "Login successful") {
+        const userId = loginResponse.data[1].user_id;
+        setUser(userId);
+        fetchActivities(userId);
+      }
+    } catch (error) {
+      console.error('Error logging in:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-                    // Fetch activities for logged-in user
-                    const activitiesResponse = await api.get(`/getActivity/${userId}`);
-                    if (activitiesResponse.data.length > 0) {
-                        setActivities(activitiesResponse.data);
-                        const sum = activitiesResponse
-                            .data
-                            .reduce((acc, activity) => {
-                                const distance = parseFloat(activity.distance);
-                                return acc + (
-                                    isNaN(distance)
-                                        ? 0
-                                        : distance
-                                );
-                            }, 0);
-                        setTotalDistance(sum.toFixed(2)); // Sum and fix to 2 decimal places
-                        setIsNewUser(false); // Set isNewUser to false as there are existing activities
-                    } else {
-                        setIsNewUser(true); // Set isNewUser to true as there are no activities
-                    }
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        loginAndFetchData();
-    }, []);
+  const fetchActivities = async (userId) => {
+    try {
+      const activitiesResponse = await api.get(`/getActivity/${userId}`);
+      if (activitiesResponse.data.length > 0) {
+        setActivities(activitiesResponse.data);
+        const sum = activitiesResponse.data.reduce((acc, activity) => acc + (parseFloat(activity.distance) || 0), 0);
+        setTotalDistance(sum.toFixed(2));
+        setIsNewUser(false);
+      } else {
+        setIsNewUser(true);
+      }
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+    }
+  };
 
     const handleNavigation = (tab) => {
         setActiveTab(tab);

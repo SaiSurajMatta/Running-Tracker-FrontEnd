@@ -1,22 +1,49 @@
-import React from 'react';
-import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, Image, Alert, ActivityIndicator } from 'react-native';
+import axios from 'axios';
 
-/**
- * Represents a form component for user login.
- * 
- * @param {object} props - The properties passed to the component.
- * @param {object} props.navigation - The navigation object to navigate between screens.
- * @returns {JSX.Element} LoginForm component JSX markup.
- */
 const LoginForm = ({ navigation }) => {
-  /**
-   * Navigates to the signup form screen.
-   */
-  const handleSignupNavigation = () => {
-    navigation.navigate('SignupForm');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return emailRegex.test(email);
   };
 
-  // JSX markup for LoginForm component
+  const handleLogin = async () => {
+    if (!isValidEmail(email)) {
+      Alert.alert("Invalid Email", "Please enter a valid email address.");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Invalid Password", "Password must be at least 6 characters long.");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await axios.post('http://localhost:5000/login', {
+        email: email,
+        password: password
+      });
+
+      if (response.status === 200) {
+        Alert.alert('Success', 'Login successful', [
+          { text: "OK", onPress: () => navigation.navigate('HomeScreen', { email: email, password: password }) }
+        ]);
+      } else {
+        throw new Error('Failed to login');
+      }
+    } catch (error) {
+      Alert.alert('Login Failed', error.response ? error.response.data.message : error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Image
@@ -30,6 +57,9 @@ const LoginForm = ({ navigation }) => {
       <TextInput
         style={styles.input}
         placeholder="Enter email"
+        value={email}
+        onChangeText={setEmail}
+        autoCapitalize="none"
       />
 
       <Text style={styles.label}>Password:</Text>
@@ -37,16 +67,20 @@ const LoginForm = ({ navigation }) => {
         style={styles.input}
         placeholder="Enter password"
         secureTextEntry
+        value={password}
+        onChangeText={setPassword}
       />
 
-      <Button title="Login" onPress={() => {}} />
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <Button title="Login" onPress={handleLogin} />
+      )}
 
-      {/* Sign up button */}
-      <TouchableOpacity style={styles.signInButton} onPress={handleSignupNavigation}>
+      <TouchableOpacity style={styles.signInButton} onPress={() => navigation.navigate('SignupForm')}>
         <Text style={styles.signInText}>New to the app? Sign up</Text>
       </TouchableOpacity>
 
-      {/* Forgot Password button */}
       <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
         <Text style={styles.forgotPasswordTextButton}>Forgot Password?</Text>
       </TouchableOpacity>
@@ -54,9 +88,6 @@ const LoginForm = ({ navigation }) => {
   );
 };
 
-/**
- * StyleSheet for styling the LoginForm component.
- */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -98,12 +129,11 @@ const styles = StyleSheet.create({
     color: '#007BFF',
     textDecorationLine: 'underline',
   },
-  // Style for the Forgot Password button
   forgotPasswordTextButton: {
     fontSize: 16,
     color: '#007BFF',
     textDecorationLine: 'underline',
-    marginTop: 10, // Adjust the margin as needed
+    marginTop: 10,
   },
 });
 
