@@ -12,6 +12,7 @@ const HistoryScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const userId = route.params?.userId;
+    console.log(userId)
     if (userId) {
       fetchActivities(userId);
     }
@@ -26,10 +27,18 @@ const HistoryScreen = ({ route, navigation }) => {
         console.error('Failed to fetch activities');
       }
     } catch (error) {
-      console.error('Error fetching activities:', error);
+      if (error.response && error.response.status === 404) {
+        // Handle 404 error: No activities found
+        console.log("No activities found for the given user ID");
+        // You can set an appropriate message to display to the user
+      } else {
+        // Handle other errors
+        console.error("Error fetching activities:", error);
+        // You can set an appropriate error message or display a generic error
+      }
     }
   };
-
+  
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
@@ -50,13 +59,13 @@ const HistoryScreen = ({ route, navigation }) => {
         )}
       </ScrollView>
       <View style={styles.navBar}>
-      <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+      <TouchableOpacity onPress={() => navigation.navigate('HistoryScreen', {userId: route.params?.userId})}>
           <Ionicons name='time' size={24} color='#00BFFF' />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
           <Ionicons name='home-outline' size={24} color='black' />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen', {userId: route.params?.userId})}>
           <Ionicons name='person-outline' size={24} color='black' />
         </TouchableOpacity>
       </View>

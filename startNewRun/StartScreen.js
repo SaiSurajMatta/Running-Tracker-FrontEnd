@@ -102,13 +102,13 @@ const StartScreen = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
       <View style={styles.navBar}>
-      <TouchableOpacity onPress={() => handleNavigation('HistoryScreen')}>
+      <TouchableOpacity onPress={() => handleNavigation('HistoryScreen', { userId: route.params?.userId })}>
           <Ionicons name={activeTab === 'history' ? 'time' : 'time-outline'} size={24} color={activeTab === 'history' ? '#00BFFF' : 'black'} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleNavigation('HomeScreen')}>
+        <TouchableOpacity onPress={() => handleNavigation('HomeScreen', { userId: route.params?.userId })}>
           <Ionicons name={activeTab === 'home' ? 'home' : 'home-outline'} size={24} color={activeTab === 'home' ? '#00BFFF' : 'black'} />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleNavigation('ProfileScreen')}>
+        <TouchableOpacity onPress={() => handleNavigation('ProfileScreen', { userId: route.params?.userId })}>
           <Ionicons name={activeTab === 'profile' ? 'person' : 'person-outline'} size={24} color={activeTab === 'profile' ? '#00BFFF' : 'black'} />
         </TouchableOpacity>
       </View>

@@ -1,40 +1,72 @@
-import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import PredictionForm from "./PredictionForm";
-// import DropDownPicker from "react-native-dropdown-picker";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "http://127.0.0.1:5000",
+});
 
 const ProfileScreen = ({ navigation, route }) => {
-  const {
-    email,
-    firstName,
-    middleName,
-    lastName,
-    dateOfBirth,
-    gender,
-    address,
-  } = route.params || {};
-  const formattedDateOfBirth = dateOfBirth ? new Date(dateOfBirth).toLocaleDateString() : '';
-
+  const [user, setUser] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("profile");
-  const [showOptions, setShowOptions] = useState(false); 
-// const [isDropDownVisible, setIsDropDownVisible] = useState(false);
-// const [isDropDownOpen, setIsDropDownOpen] = useState(false);
-  const handleLogout = () => {
-    navigation.navigate('LoginForm');
-  };
 
-  const handleEdit = () => {
-    // Functionality to edit profile details
-  };
+  useEffect(() => {
+    const userId = route.params?.userId;
+    console.log("User ID in EditProfileForm:", userId);
+    if (userId) {
+      fetchUserDetails(userId);
+    }
+  }, [route.params]);
 
-  const handleNavigation = (tab) => {
-    if (route.name !== tab) {
-      setActiveTab(tab);
-      navigation.navigate(tab);
+  const fetchUserDetails = async (userId) => {
+    try {
+      const userDetailsResponse = await api.get(`/getUserDetails/${userId}`);
+      setUserDetails(userDetailsResponse.data);
+    } catch (error) {
+      console.error("Error fetching user details:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const [showOptions, setShowOptions] = useState(false);
+  // const [isDropDownVisible, setIsDropDownVisible] = useState(false);
+  // const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+  const handleLogout = () => {
+    navigation.navigate("LoginForm");
+  };
+
+  const handleEdit = () => {
+    const userId = route.params?.userId;
+    console.log("User ID:", userId);
+    navigation.navigate("EditProfileForm", { userId });
+  };
+
+  const handleNavigation = (tab) => {
+    console.log("User ID in Profile screen:", route.params?.userId);
+    if (route.name !== tab) {
+      setActiveTab(tab);
+      navigation.navigate(tab, {userId: route.params?.userId });
+    }
+  };
+
+  if (loading || !userDetails) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="#00ff00" />
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
       <View style={styles.titleBar}>
@@ -49,32 +81,16 @@ const ProfileScreen = ({ navigation, route }) => {
       </View>
       <View style={styles.detailsContainer}>
         <Text style={styles.sectionTitle}>Personal Information</Text>
-        <View style={styles.detailsBox}>
-          <Text style={styles.detailLabel}>Email:</Text>
-          <Text style={styles.detail}>{email}</Text>
-        </View>
-        <View style={styles.detailsBox}>
-          <Text style={styles.detailLabel}>Name:</Text>
-          <Text style={styles.detail}>
-            {firstName} {middleName ? middleName + " " : ""} {lastName}
-          </Text>
-        </View>
-        <View style={styles.detailsBox}>
-          <Text style={styles.detailLabel}>Date of Birth:</Text>
-          <Text style={styles.detail}>{formattedDateOfBirth}</Text>
-        </View>
-        <View style={styles.detailsBox}>
-          <Text style={styles.detailLabel}>Gender:</Text>
-          <Text style={styles.detail}>{gender}</Text>
-        </View>
-        <View style={styles.detailsBox}>
-          <Text style={styles.detailLabel}>Address:</Text>
-          <Text style={styles.detail}>{address}</Text>
-        </View>
+        {Object.entries(userDetails).map(([key, value]) => (
+          <View style={styles.detailsBox} key={key}>
+            <Text style={styles.detailLabel}>{key}:</Text>
+            <Text style={styles.detail}>{value}</Text>
+          </View>
+        ))}
         {/* New button to navigate to PredictionForm */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('PredictionForm')}
+          onPress={() => navigation.navigate("PredictionForm", {userId: route.params?.userId})}
         >
           <Text style={styles.buttonText}>Predict my Performance</Text>
         </TouchableOpacity>
@@ -92,21 +108,21 @@ const ProfileScreen = ({ navigation, route }) => {
         )}
       </View>
       <View style={styles.navBar}>
-        <TouchableOpacity onPress={() => handleNavigation("HistoryScreen")}>
+        <TouchableOpacity onPress={() => handleNavigation("HistoryScreen", {userId: route.params?.userId})}>
           <Ionicons
             name={activeTab === "history" ? "time" : "time-outline"}
             size={24}
             color={activeTab === "history" ? "#00BFFF" : "black"}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleNavigation("HomeScreen")}>
+        <TouchableOpacity onPress={() => handleNavigation("HomeScreen", {userId: route.params?.userId})}>
           <Ionicons
             name={activeTab === "home" ? "home" : "home-outline"}
             size={24}
             color={activeTab === "home" ? "#00BFFF" : "black"}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleNavigation("ProfileScreen")}>
+        <TouchableOpacity onPress={() => handleNavigation("ProfileScreen", {userId: route.params?.userId})}>
           <Ionicons
             name={activeTab === "profile" ? "person" : "person-outline"}
             size={24}

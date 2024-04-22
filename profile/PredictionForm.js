@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const PredictionForm = ({ navigation }) => {
+const PredictionForm = ({ navigation, route }) => {
   const [prevDistance, setPrevDistance] = useState('');
   const [upcomingDistance, setUpcomingDistance] = useState('');
   const [prevTime, setPrevTime] = useState('');
@@ -49,13 +49,13 @@ const PredictionForm = ({ navigation }) => {
       </View>
 
       <View style={styles.navBar}>
-        <TouchableOpacity onPress={() => navigation.navigate("HistoryScreen")}>
+        <TouchableOpacity onPress={() => navigation.navigate("HistoryScreen", {userId: route.params?.userId})}>
           <Ionicons name="time-outline" size={24} color="black" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate("HomeScreen")}>
           <Ionicons name="home-outline" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen")}>
+        <TouchableOpacity onPress={() => navigation.navigate("ProfileScreen", {userId: route.params?.userId})}>
           <Ionicons name="person-outline" size={24} color="black" />
         </TouchableOpacity>
       </View>

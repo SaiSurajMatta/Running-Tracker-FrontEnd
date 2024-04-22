@@ -13,6 +13,7 @@ import HistoryScreen from './history/HistoryScreen';
 import ForgotPassword from './newUserRegistration/ForgotPassword'; // Ensure this file exists and is correctly exported
 import PredictionForm from './profile/PredictionForm';
 import PredictionResult from './profile/PredictionResult';
+import EditProfileForm from './profile/EditProfileForm';
 
 const Stack = createStackNavigator();
 
@@ -32,6 +33,7 @@ function App() {
         <Stack.Screen name="PredictionForm" component={PredictionForm} options={{ headerShown: false }}/>
         <Stack.Screen name="PredictionResult" component={PredictionResult} options={{ headerShown: false }}/>
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="EditProfileForm" component={EditProfileForm} />
       </Stack.Navigator>
     </NavigationContainer>
   );
