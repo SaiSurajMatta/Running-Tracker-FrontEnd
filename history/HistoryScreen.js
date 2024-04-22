@@ -1,44 +1,56 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
 
-// Example static data for UI demonstration
-const previousRuns = [
-  {
-    id: 1,
-    title: 'Morning Run',
-    distance: '5 miles',
-    duration: '30 minutes',
-    date: '2024-04-03',
-  },
-  {
-    id: 2,
-    title: 'Evening Run',
-    distance: '3 miles',
-    duration: '18 minutes',
-    date: '2024-04-02',
-  },
-  // Add more runs as needed
-];
+const api = axios.create({
+  baseURL: 'http://127.0.0.1:5000',
+});
 
-const HistoryScreen = ({ navigation }) => {
+const HistoryScreen = ({ route, navigation }) => {
+  const [activities, setActivities] = useState([]);
+
+  useEffect(() => {
+    const userId = route.params?.userId;
+    if (userId) {
+      fetchActivities(userId);
+    }
+  }, [route.params]);
+
+  const fetchActivities = async (userId) => {
+    try {
+      const response = await api.get(`/getActivity/${userId}`);
+      if (response.status === 200) {
+        setActivities(response.data);
+      } else {
+        console.error('Failed to fetch activities');
+      }
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView style={styles.scrollView}>
         <Text style={styles.screenTitle}>Run History</Text>
-        {previousRuns.map((run) => (
-          <View key={run.id} style={styles.runContainer}>
-            <Text style={styles.runTitle}>{run.title}</Text>
+        {activities.length > 0 ? activities.map((activity) => (
+          <View key={activity.activity_id} style={styles.runContainer}>
+            <Text style={styles.runTitle}>{activity.title}</Text>
             <View style={styles.runDetails}>
-              <Text style={styles.runText}>Distance: {run.distance}</Text>
-              <Text style={styles.runText}>Duration: {run.duration}</Text>
-              <Text style={styles.runText}>Date: {run.date}</Text>
+              <Text style={styles.runText}>Location: {activity.location}</Text>
+              <Text style={styles.runText}>Start Time: {activity.start_time}</Text>
+              <Text style={styles.runText}>End Time: {activity.end_time}</Text>
+              <Text style={styles.runText}>Date: {activity.date}</Text>
+              <Text style={styles.runText}>Distance: {activity.distance}</Text>
             </View>
           </View>
-        ))}
+        )) : (
+          <Text>No activities found</Text>
+        )}
       </ScrollView>
       <View style={styles.navBar}>
-        <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
           <Ionicons name='time' size={24} color='#00BFFF' />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>

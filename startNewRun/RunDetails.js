@@ -36,7 +36,9 @@ const RunDetails = ({ route, navigation }) => {
       });
       if (response.status === 200) {
         Alert.alert("Success", "Activity completed successfully!");
-        navigation.navigate('HistoryScreen');
+        navigation.navigate('HistoryScreen', { userId: userId });
+        // onPress={() => navigation.navigate('HistoryScreen', { userId: user })}
+
       } else {
         throw new Error('Failed to complete activity');
       }

@@ -65,7 +65,9 @@ const LogActivityScreen = ({ navigation, route }) => {
         });
         if (endResponse.status === 200) {
           Alert.alert("Success", "Activity logged successfully!");
-          navigation.navigate("HistoryScreen");
+          navigation.navigate("HistoryScreen", { userId: route.params.userId });
+          // onPress={() => navigation.navigate('HistoryScreen', { userId: user })}
+
         } else {
           throw new Error('Failed to end activity');
         }
