@@ -45,6 +45,10 @@ const LogActivityScreen = ({ navigation, route }) => {
   };
 
   const handleSubmit = async () => {
+    if (!activityTitle || !location || !distance) {
+      Alert.alert("Error", "Please fill in all fields before submitting.");
+      return;
+    }
     // Call /startActivity API
     try {
       const startResponse = await api.post('/startActivity', {

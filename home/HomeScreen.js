@@ -5,7 +5,10 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
+  RefreshControl // Import RefreshControl
 } from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import axios from "axios";
 
@@ -19,13 +22,31 @@ const HomeScreen = ({ route, navigation }) => {
   const [totalDistance, setTotalDistance] = useState(0);
   const [isNewUser, setIsNewUser] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // Add state to handle refreshing
   const [activeTab, setActiveTab] = useState("home");
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (user) {
+        loginAndFetchData(route.params.email, route.params.password);
+      }
+    }, [navigation])
+  );
 
   useEffect(() => {
     if (route.params?.email && route.params?.password) {
       loginAndFetchData(route.params.email, route.params.password);
     }
   }, [route.params]);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    if (user) {
+      fetchActivities(user).then(() => setRefreshing(false)); // Ensure refresh ends after fetching
+    } else {
+      setRefreshing(false); // End refreshing if no user is logged in
+    }
+  }, [user]);
 
   const loginAndFetchData = async (email, password) => {
     setLoading(true);
@@ -47,7 +68,7 @@ const HomeScreen = ({ route, navigation }) => {
     try {
       const activitiesResponse = await api.get(`/getActivity/${userId}`);
       if (activitiesResponse.data.length > 0) {
-        setActivities(activitiesResponse.data);
+        setActivities(activitiesResponse.data.reverse());
         const sum = activitiesResponse.data.reduce(
           (acc, activity) => acc + (parseFloat(activity.distance) || 0),
           0
@@ -58,15 +79,7 @@ const HomeScreen = ({ route, navigation }) => {
         setIsNewUser(true);
       }
     } catch (error) {
-      if (error.response && error.response.status === 404) {
-        // Handle 404 error: No activities found
-        console.log("No activities found for the given user ID");
-        // You can set an appropriate message to display to the user
-      } else {
-        // Handle other errors
-        console.error("Error fetching activities:", error);
-        // You can set an appropriate error message or display a generic error
-      }
+      console.error("Error fetching activities:", error);
     }
   };
 
@@ -96,6 +109,12 @@ const HomeScreen = ({ route, navigation }) => {
   }
 
   return (
+    <ScrollView
+      contentContainerStyle={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
     <View style={styles.container}>
       <View style={styles.titleBar}>
         <Text style={styles.title}>Running Tracker</Text>
@@ -194,6 +213,8 @@ const HomeScreen = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
     </View>
+        </ScrollView>
+
   );
 };
 
