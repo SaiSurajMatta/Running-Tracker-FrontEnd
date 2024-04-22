@@ -101,37 +101,36 @@ const HomeScreen = ({ route, navigation }) => {
             </View>
 
             <View style={styles.activityContainer}>
-                <Text style={styles.sectionTitle}>Recent Activities</Text>
-                {
-                    activities
-                        .slice(0, 1)
-                        .map((activity) => (
-                            <TouchableOpacity
-                                key={activity.activity_id}
-                                style={styles.activity}
-                                onPress={() => handleNavigation('HistoryScreen')}>
-                                <View
-                                    style={{
-                                        flexDirection: "row",
-                                        justifyContent: "space-between",
-                                        flex: 1
-                                    }}>
-                                    <View style={styles.activityDetails}>
-                                        <Text style={styles.activityTitle}>{activity.title}</Text>
-                                        <Text style={styles.activityInfo}>{activity.location}</Text>
-                                        <Text style={styles.activityInfo}>{activity.distance}
-                                            Miles</Text>
-                                    </View>
-                                    <View style={styles.activityDetailsRight}>
-                                        <Text style={styles.activityInfo}>{activity.end_time}</Text>
-                                        <Text style={styles.activityInfo}>{activity.date}</Text>
-                                    </View>
-                                </View>
-                                <MaterialCommunityIcons name="chevron-right" size={24} color="#000"/>
-                            </TouchableOpacity>
-                        ))
-                }
-            </View>
+    <Text style={styles.sectionTitle}>Recent Activities</Text>
+    {
+        activities.slice(0, 1).map((activity) => (
+            <TouchableOpacity
+                key={activity.activity_id}
+                style={styles.activity}
+                onPress={() => navigation.navigate('HistoryScreen', { userId: user })}
+            >
+                <View
+                    style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        flex: 1
+                    }}>
+                    <View style={styles.activityDetails}>
+                        <Text style={styles.activityTitle}>{activity.title}</Text>
+                        <Text style={styles.activityInfo}>{activity.location}</Text>
+                        <Text style={styles.activityInfo}>{activity.distance} Miles</Text>
+                    </View>
+                    <View style={styles.activityDetailsRight}>
+                        <Text style={styles.activityInfo}>{activity.end_time}</Text>
+                        <Text style={styles.activityInfo}>{activity.date}</Text>
+                    </View>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={24} color="#000"/>
+            </TouchableOpacity>
+        ))
+    }
+</View>
+
 
             {/* <TouchableOpacity style={styles.showMoreButton} onPress={() => handleNavigation('HistoryScreen')}>
         <Text style={styles.showMoreText}>More</Text>
@@ -140,37 +139,29 @@ const HomeScreen = ({ route, navigation }) => {
 
             {/* Fixed Navigation Bar at the bottom */}
             <View style={styles.navBar}>
-                <TouchableOpacity onPress={() => handleNavigation('HistoryScreen')}>
-                    <Ionicons
-                        name={activeTab === 'history'
-                            ? 'time'
-                            : 'time-outline'}
-                        size={24}
-                        color={activeTab === 'history'
-                            ? '#00BFFF'
-                            : 'black'}/>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleNavigation('HomeScreen')}>
-                    <Ionicons
-                        name={activeTab === 'home'
-                            ? 'home'
-                            : 'home-outline'}
-                        size={24}
-                        color={activeTab === 'home'
-                            ? '#00BFFF'
-                            : 'black'}/>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => handleNavigation('ProfileScreen')}>
-                    <Ionicons
-                        name={activeTab === 'profile'
-                            ? 'person'
-                            : 'person-outline'}
-                        size={24}
-                        color={activeTab === 'profile'
-                            ? '#00BFFF'
-                            : 'black'}/>
-                </TouchableOpacity>
-            </View>
+    <TouchableOpacity onPress={() => navigation.navigate('HistoryScreen', { userId: user })}>
+        <Ionicons
+            name={activeTab === 'history' ? 'time' : 'time-outline'}
+            size={24}
+            color={activeTab === 'history' ? '#00BFFF' : 'black'}
+        />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+        <Ionicons
+            name={activeTab === 'home' ? 'home' : 'home-outline'}
+            size={24}
+            color={activeTab === 'home' ? '#00BFFF' : 'black'}
+        />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
+        <Ionicons
+            name={activeTab === 'profile' ? 'person' : 'person-outline'}
+            size={24}
+            color={activeTab === 'profile' ? '#00BFFF' : 'black'}
+        />
+    </TouchableOpacity>
+</View>
+
         </View>
     );
 };
